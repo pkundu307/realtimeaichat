@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { RootState } from "../GlobalRedux/store";
 
+
 // Define the structure of a Participant
 interface Participant {
   participantId: string;
@@ -31,34 +32,103 @@ interface UserData {
   updatedAt: string;
   __v: number;
 }
+interface Sender {
+  senderId: string;
+  senderType: string;
+}
+
+interface Message {
+  _id: string;
+  chat: string;
+  message: string;
+  createdAt: string;
+  updatedAt: string;
+  sender: Sender;
+}
+
+interface FetchMessagesResponse {
+  success: boolean;
+  messages: Message[];
+}
 
 const ChatLayout = () => {
   const email = useSelector((state: RootState) => state.user.email);
 
   const [userId, setUserId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<{ message: string; time: string }[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [conversations, setConversations] = useState<Chat[]>([]);
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newChatName, setNewChatName] = useState("");
   const [newMessage, setNewMessage] = useState("");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  const handleSendMessage = () => {
-    if (!newMessage.trim()) return;
 
-    // Append the new message to the selected conversation (this is local-only logic).
-    setConversations((prev) =>
-      prev.map((conv) =>
-        conv._id === selectedConversationId
-          ? { ...conv, messages: [...(conv.messages || []), newMessage] }
-          : conv
-      )
-    );
+  const fetchMessages = async (chatId: string) => {
+    setLoading(true);
+    setError(null);
 
-    setNewMessage("");
+    try {
+      const response = await fetch(`http://localhost:3000/api/messages/${chatId}`);
+      const data: FetchMessagesResponse = await response.json();
+
+      if (response.ok) {
+        // Map the messages to include the time in a human-readable format
+        const structuredMessages = data.messages.map((msg) => ({
+          message: msg.message,
+          time: new Date(msg.createdAt).toLocaleString(), // Convert ISO date to a readable format
+        }));
+        setMessages(structuredMessages);
+      } else {
+        setError("Failed to fetch messages.");
+      }
+    } catch (err) {
+      console.error("Error fetching messages:", err);
+      setError("Network error or server is unavailable.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const selectedConversation = conversations.find(
-    (conv) => conv._id === selectedConversationId
-  );
+  useEffect(() => {
+    if (selectedConversationId) {
+      fetchMessages(selectedConversationId);
+    }
+  }, [selectedConversationId]);
+
+  const handleAddChat = async () => {
+    if (!newChatName.trim()) return;
+
+    const requestBody = {
+      participants: [
+        { participantId: userId, participantType: "User" },
+        { participantId: "64fcc42df43e710", participantType: "GeminiResponse" },
+      ],
+      title: newChatName,
+    };
+
+    try {
+      const response = await fetch("http://localhost:3000/api/chats/createChat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (response.ok) {
+        setNewChatName("");
+        setIsModalOpen(false);
+        location.reload(); // Reload to fetch updated chat list
+      } else {
+        console.error("Failed to create chat:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error creating chat:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -103,18 +173,74 @@ const ChatLayout = () => {
     fetchChats();
   }, [userId]);
 
+
+  const handleSendMessage = async () => {
+    console.log('clicked');
+    
+    if (!newMessage.trim() || !selectedConversationId || !userId) return;
+  
+    const requestBody = {
+      chatId: selectedConversationId,
+      senderId: userId,
+      senderType: "User",
+      message: newMessage,
+    };
+  
+    try {
+      const response = await fetch("http://localhost:3000/api/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Message sent successfully:", data);
+  
+        // Refresh messages for the selected chat
+        await fetchMessages(selectedConversationId);
+  
+        // Clear the input field
+        setNewMessage("");
+      } else {
+        console.error("Failed to send message:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+  
+
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="w-1/4 bg-gray-950 p-4 overflow-y-auto">
-        <h2 className="text-lg font-bold mb-4">Conversations</h2>
+      <div
+        className={`fixed md:static top-0 left-0 h-screen bg-gray-950 p-4 overflow-y-auto transform transition-transform ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0 w-64`}
+      >
+        <h2 className="text-lg font-bold mb-4 text-white">Conversations</h2>
+        <button
+          onClick={() => setIsSidebarOpen(false)}
+          className="block md:hidden w-full p-2 bg-red-300 text-white rounded mb-4 mt-10"
+        >
+         ❌
+        </button>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="w-full p-2 bg-blue-600 text-white rounded mt-4 mb-4"
+        >
+          + Add Chat
+        </button>
         {conversations.map((conversation) => (
           <div
             key={conversation._id}
             onClick={() => setSelectedConversationId(conversation._id)}
-            className={`p-2 mb-2 cursor-pointer rounded ${
+            className={`p-2 mb-2 cursor-pointer rounded text-white ${
               selectedConversationId === conversation._id
-                ? "bg-gray-800 text-white"
+                ? "bg-gray-800"
                 : "bg-gray-700"
             }`}
           >
@@ -124,28 +250,40 @@ const ChatLayout = () => {
       </div>
 
       {/* Chat area */}
-      <div className="w-3/4 flex flex-col bg-white">
+      <div className="flex-1 flex flex-col bg-white">
+        {/* Header for toggle */}
+        <div className="p-4 bg-gray-100 border-b border-gray-300 flex items-center md:hidden">
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="bg-blue-200 text-white p-2 rounded"
+          >
+            ➡️
+          </button>
+        </div>
+
         {/* Messages */}
         <div className="flex-1 p-4 overflow-y-auto">
-          {selectedConversation ? (
-            selectedConversation.messages?.map((message, index) => (
-              <div
-                key={index}
-                className="mb-2 p-2 bg-gray-100 text-black rounded"
-              >
-                {message}
-              </div>
-            )) || (
-              <div className="text-black">
-                No messages in this conversation. Start the chat!
-              </div>
-            )
-          ) : (
-            <div className="text-black">
-              Select a conversation to start chatting
-            </div>
-          )}
-        </div>
+  {loading && <div>Loading messages...</div>}
+  {error && <div className="text-red-500">{error}</div>}
+  {!loading && !messages.length && !error && (
+    <div className="text-black">No messages found for this conversation.</div>
+  )}
+
+  {messages.map((msg, index) => (
+    <div
+      key={index}
+      className={`mb-4 p-4 text-black rounded-lg max-w-[80%] ${
+        index % 2 === 0
+          ? "bg-blue-100 self-start ml-4" // Even index: left aligned (bot's message)
+          : "bg-green-100 self-end mr-4" // Odd index: right aligned (user's message)
+      }`}
+    >
+      <div>{msg.message}</div>
+      <div className="text-sm text-gray-500">{msg.time}</div>
+    </div>
+  ))}
+</div>
+
 
         {/* Input field */}
         <div className="p-4 border-t border-gray-300 flex">
@@ -157,13 +295,42 @@ const ChatLayout = () => {
             className="flex-1 border border-gray-600 p-2 rounded focus:outline-none text-black"
           />
           <button
-            onClick={handleSendMessage}
+            onClick={() => handleSendMessage()}
             className="ml-2 bg-blue-500 text-black px-4 py-2 rounded"
           >
             Send
           </button>
         </div>
       </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-gray-800 p-6 rounded shadow-lg w-80">
+            <h3 className="text-lg font-bold mb-4">New Chat</h3>
+            <input
+              type="text"
+              value={newChatName}
+              onChange={(e) => setNewChatName(e.target.value)}
+              placeholder="Enter chat name"
+              className="w-full p-2 mb-4 border rounded bg-gray-700 text-white"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 bg-gray-600 text-white rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddChat}
+                className="px-4 py-2 bg-blue-600 text-white rounded"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

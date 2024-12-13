@@ -38,7 +38,7 @@ interface Result {
 
 
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse> {
 
     try {
       // Initialize GoogleGenerativeAI with your API key

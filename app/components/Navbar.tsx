@@ -2,24 +2,38 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { setUser,clearUser } from "../GlobalRedux/Features/auth/authSlice";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { setUser } from "../GlobalRedux/Features/auth/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import Link from "next/link";
+import { RootState } from "../GlobalRedux/store";
 
-interface user{
+interface User {
   email: string;
   name: string;
   image: string;
   googleId: string;
   id: string;
 }
+
 const Navbar: React.FC = () => {
+  const [isPopupOpen, setIsPopupOpen] = useState(false); // Manage popup visibility
+  const selectedColor = useSelector((state: RootState) => state.color.selectedColor);
+
+  const handleAvatarClick = () => {
+    setIsPopupOpen(true); // Open the popup on avatar click
+  };
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false); // Close the popup
+  };
+
   const { data: session } = useSession();
   const router = useRouter();
-  const dispatch = useDispatch(); 
+  const dispatch = useDispatch();
 
   // Function to send user details to the backend API
-  const storeUserDetails = async (user: user) => {
+  const storeUserDetails = async (user: User) => {
     try {
       const response = await fetch("http://localhost:3000/api/auth/login", {
         method: "POST",
@@ -30,9 +44,10 @@ const Navbar: React.FC = () => {
           email: user?.email,
           name: user?.name,
           image: user?.image,
-          // googleId: user.googleId,
+          // googleId: user.googleId, // optional field
         }),
       });
+
 
       const data = await response.json();
       if (response.ok) {
@@ -51,48 +66,55 @@ const Navbar: React.FC = () => {
   };
 
   useEffect(() => {
-    if (session && session.user) {
+    if (session?.user) {
       // Store user details if session exists
       const user = {
         id: session.user.id || "", // Replace with your session field for ID
         name: session.user.name || "",
         email: session.user.email || "",
         image: session.user.image || "",
+        // googleId: session.user.id || "", // Assuming googleId is available in session
       };
       // Dispatch Redux action
       dispatch(setUser(user));
-      
+
       storeUserDetails(session.user);
     }
-  }, [session]);
+  }, [session, dispatch]);
 
   return (
-<nav className="bg-gray-800 p-4 text-white flex justify-between items-center sticky top-0 z-50">
-<div className="text-xl font-bold">MyApp</div>
-      {session && (
+    <nav
+    className="p-4 text-white flex justify-between items-center sticky top-0 z-50"
+    style={{ backgroundColor: selectedColor }} // Dynamically apply the selected color
+  >
+      <div className="text-xl font-bold">CHATVAT</div>
+
+      {session?.user && (
         <div className="flex gap-4 items-center">
-          <span>Welcome, {session.user?.name}!</span>
-          <span>{session.user?.email}</span>
+          <span className="hidden md:block">Welcome, {session.user.name}!</span>
+          <span className="hidden md:block">{session.user.email}</span>
         </div>
       )}
-      <div>
+
+      <div className="flex items-center gap-4">
         {session ? (
-          <div className="flex items-center gap-4">
+          <>
             <Image
               src={session.user?.image || "/default-avatar.png"}
               alt={session.user?.name || "User"}
               className="w-8 h-8 rounded-full"
-              width={10}
-              height={10}
+              width={32}
+              height={32}
+              onClick={handleAvatarClick} // Handle click to show the popup
             />
-            <span>{session.user?.name}</span>
+            <span className="hidden md:block">{session.user?.name}</span>
             <button
               className="bg-red-500 px-4 py-2 rounded"
               onClick={() => signOut()}
             >
               Logout
             </button>
-          </div>
+          </>
         ) : (
           <button
             className="bg-blue-500 px-4 py-2 rounded"
@@ -102,6 +124,43 @@ const Navbar: React.FC = () => {
           </button>
         )}
       </div>
+
+      {isPopupOpen && (
+   <div
+   className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50"
+   onClick={handleClosePopup} // Close popup when clicking outside
+ >
+   <div
+     className="bg-gray-400 p-6 rounded-lg shadow-lg w-80"
+     onClick={(e) => e.stopPropagation()} // Prevent popup close when clicking inside
+   >
+
+<div className="flex justify-end gap-2 mt-6">
+       <button
+         className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+         onClick={handleClosePopup}
+       >
+         ❌
+       </button>
+     </div>
+     <div className="mb-4 space-y-4 text-black">
+       {/* Profile Section */}
+       <div className="border-b pb-4">
+       <Link href={"/profile"}>  <h3 className="text-lg font-semibold" onClick={()=>setIsPopupOpen(false)}>Profile</h3></Link>
+      
+       </div>
+       
+       {/* Settings Section */}
+       <div>
+       <Link href={"/settingpage"}>  <h3 className="text-lg font-semibold text-black" onClick={()=>setIsPopupOpen(false)}>Settings</h3></Link>
+        
+       </div>
+     </div>
+   
+   </div>
+ </div>
+ 
+      )}
     </nav>
   );
 };

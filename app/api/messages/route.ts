@@ -67,16 +67,37 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    const prompt =  'hy how are you';
+    const prompt = message;
     // Generate content using Google Generative AI
 
    
-    const result: Result = await model.generateContent(prompt as string); // Log the result to the console
-     console.log('Generated Result:', result); // Extract the generated text
-      const text = result.message.response.candidates[0].content.parts[0].text; console.log('Generated Text:', text);
-      
+    const result: Result = await model.generateContent(prompt as string); 
 
-      // Extract the generated text
+    // Log the result to the console
+    console.log('Generated Result:', result); 
+    
+    // Function to extract the generated text
+    function findText(obj: any): string[] {
+        let texts: string[] = [];
+        function recurse(current: any) {
+            if (typeof current === "object" && current !== null) {
+                for (const key in current) {
+                    if (key === "text") {
+                        texts.push(current[key]);
+                    } else {
+                        recurse(current[key]);
+                    }
+                }
+            }
+        }
+        recurse(obj);
+        return texts;
+    }
+    
+    // Call findText and log the extracted texts
+    const texts = findText(result);
+    console.log('Extracted Texts:', texts[0]);
+    
      
 
    
@@ -89,11 +110,19 @@ export async function POST(req: NextRequest) {
         senderType,
       },
       message,
-      result: result, // Store the extracted content
     });
 
+    const responseMessage = await Message.create({
+      chat:chatId,
+      sender:{
+        senderId:"675c48ac7adfa5f119475e01",
+        senderType:"GeminiResponse"
+      },
+      message: texts[0], // Use the extracted text as the response message
+    })
+
     // Return the created message
-    return NextResponse.json({ success: true, message: newMessage });
+    return NextResponse.json({ success: true, message: texts[0] });
   } catch (error) {
     console.error("Error adding new message:", error);
     return NextResponse.json(
@@ -112,36 +141,3 @@ export async function POST(req: NextRequest) {
 
 
 
-
-export async function GET(req:NextRequest) {
-  try {
-    // Connect to the database
-    await connectionToDatabase();
-
-    // Extract chatId from the query parameters
-    const { searchParams } = new URL(req.url);
-    const chatId = searchParams.get("chatId");
-
-    // Validate input
-    if (!chatId) {
-      return NextResponse.json(
-        { success: false, error: "chatId is required." },
-        { status: 400 }
-      );
-    }
-
-    // Fetch all messages for the given chatId
-    const messages = await Message.find({ chat: chatId })
-      .populate("sender.senderId", "name email") // Populate sender information if needed
-      .sort({ createdAt: 1 }); // Sort by creation time (oldest first)
-
-    // Return the messages
-    return NextResponse.json({ success: true, messages });
-  } catch (error) {
-    console.error("Error fetching messages:", error);
-    return NextResponse.json(
-      { success: false, error: "Internal Server Error." },
-      { status: 500 }
-    );
-  }
-}

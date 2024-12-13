@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { User } from "@/app/models/user.model";  // Adjust the path to where your model is located
-import {Chat} from "@/app/models/chat.model";
 import connectionToDatabase from "@/lib/mongoose";
 
 // Connect to the database if not already connected
