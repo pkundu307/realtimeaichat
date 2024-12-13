@@ -1,10 +1,11 @@
 "use client";
-"use client";
-
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { setUser,clearUser } from "../GlobalRedux/Features/auth/authSlice";
+import { useDispatch } from "react-redux";
+
 interface user{
   email: string;
   name: string;
@@ -15,6 +16,7 @@ interface user{
 const Navbar: React.FC = () => {
   const { data: session } = useSession();
   const router = useRouter();
+  const dispatch = useDispatch(); 
 
   // Function to send user details to the backend API
   const storeUserDetails = async (user: user) => {
@@ -51,6 +53,15 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     if (session && session.user) {
       // Store user details if session exists
+      const user = {
+        id: session.user.id || "", // Replace with your session field for ID
+        name: session.user.name || "",
+        email: session.user.email || "",
+        image: session.user.image || "",
+      };
+      // Dispatch Redux action
+      dispatch(setUser(user));
+      
       storeUserDetails(session.user);
     }
   }, [session]);

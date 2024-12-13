@@ -3,13 +3,20 @@ import mongoose from "mongoose";
 const messageSchema = new mongoose.Schema({
   chat: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Chat',
+    ref: "Chat",
     required: true,
   },
   sender: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
+    senderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      refPath: "sender.senderType", // Dynamic reference
+    },
+    senderType: {
+      type: String,
+      required: true,
+      enum: ["User", "GeminiResponse"], // Allowed models
+    },
   },
   message: {
     type: String,
@@ -25,6 +32,6 @@ const messageSchema = new mongoose.Schema({
   },
 });
 
-const Message = mongoose.models.Message || mongoose.model('Message', messageSchema);
+const Message = mongoose.models.messages || mongoose.model("messages", messageSchema);
 
-module.exports = Message;
+export default Message;

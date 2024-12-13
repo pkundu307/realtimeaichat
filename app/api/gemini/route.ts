@@ -9,7 +9,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
       // Prompt for the model
-      const prompt =  'Explain how AI works'; // Use a default if no prompt is provided
+      const prompt =  'hy how are you'; // Use a default if no prompt is provided
 
       // Generate content
       const result = await model.generateContent(prompt as string);

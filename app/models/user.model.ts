@@ -11,8 +11,8 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   profilePicture: {
-    type: String, // URL of profile picture
-    default: '',
+    type: String,
+    default: "",
   },
   createdAt: {
     type: Date,
@@ -22,8 +22,14 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  chats:[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "chats",
+    }
+  ]
 });
 
-const User = mongoose.models.User || mongoose.model('User', userSchema);
+const User = mongoose.models.User || mongoose.model("User", userSchema);
 
-export {User}
+export { User };
