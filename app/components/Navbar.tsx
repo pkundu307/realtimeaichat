@@ -56,8 +56,8 @@ const Navbar: React.FC = () => {
   }, [session]);
 
   return (
-    <nav className="bg-gray-800 p-4 text-white flex justify-between items-center">
-      <div className="text-xl font-bold">MyApp</div>
+<nav className="bg-gray-800 p-4 text-white flex justify-between items-center sticky top-0 z-50">
+<div className="text-xl font-bold">MyApp</div>
       {session && (
         <div className="flex gap-4 items-center">
           <span>Welcome, {session.user?.name}!</span>

@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
+import ChatLayout from "./components/Chatlayout";
 
 const SidebarItem = ({ chat, handleDragEnd }) => {
   const { attributes, listeners, setNodeRef } = useDraggable({
@@ -65,44 +66,9 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
-      {/* Main content */}
-      <div className="flex h-screen">
-        {/* Left Sidebar */}
-        <div className="w-1/4 bg-black p-4">
-          <div className="text-lg font-semibold text-white">Previous Conversations</div>
-          <ul className="mt-4">
-            {chats.map((chat) => (
-              <SidebarItem key={chat} chat={chat} handleDragEnd={handleDragEnd} />
-            ))}
-          </ul>
-          <button
-            onClick={handleNewChat}
-            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
-          >
-            New Chat
-          </button>
-        </div>
-
-        {/* Right Section - Selected Chat or New Chat */}
-        <DroppableArea handleDrop={handleDragEnd}>
-          <div className="text-lg font-semibold">Selected Chat</div>
-          <div className="mt-4">
-            {isNewChatOpen ? (
-              <div>
-                <h2 className="text-xl">New Chat</h2>
-                <p>Start a new conversation here...</p>
-                {/* Add your chat input form or messages here */}
-              </div>
-            ) : selectedChat ? (
-              <p>This is the content of {selectedChat}.</p>
-            ) : (
-              <p>Select a chat from the left sidebar.</p>
-            )}
-          </div>
-        </DroppableArea>
-      </div>
-    </DndContext>
+ <>
+ <ChatLayout/>
+ </>
   );
 };
 
