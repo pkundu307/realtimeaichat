@@ -1,21 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { User } from "@/app/models/user.model";  // Adjust the path to where your model is located
+import { User } from "@/app/models/user.model"; // Adjust the path to where your model is located
 import connectionToDatabase from "@/lib/mongoose";
 
-// Connect to the database if not already connected
+export async function GET(req: NextRequest, context: { params: { userId: string } }) {
+  const { userId } = context.params;
 
-
-export async function GET(req: NextRequest, { params }: { params: { userId: string } }) {
-  const { userId } =await params;
-  
   try {
     // Connect to the database
     await connectionToDatabase();
 
-
-    const user = await User.findById(userId).populate("chat")
-    
+    // Fetch the user and populate the "chat" field
+    const user = await User.findById(userId).populate("chat");
 
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
