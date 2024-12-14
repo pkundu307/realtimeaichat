@@ -265,7 +265,7 @@ const ChatLayout = () => {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 p-4 overflow-y-auto">
+    {conversations.length>0 ?<>    <div className="flex-1 p-4 overflow-y-auto">
           {loading && <div>Loading messages...</div>}
           {error && <div className="text-red-500">{error}</div>}
           {!loading && !messages.length && !error && (
@@ -380,7 +380,17 @@ const ChatLayout = () => {
   )}
 </button>
 
-        </div>
+        </div></>:
+        <>
+  <div className="bg-gradient-to-r from-green-400 via-purple-500 to-green-600 bg-black font-bold mt-20 ml-20 text-white text-2xl p-4 rounded-md shadow-lg">
+    <u>Select or create a chat</u>
+  </div>
+  <div className="bg-gradient-to-r from-blue-400 via-red-500 to-yellow-600 bg-black font-bold mt-20 mr-20 text-white text-2xl p-4 rounded-md shadow-lg">
+    <u>Enjoy AI company</u>
+  </div>
+</>
+
+        }
       </div>
 
       {isModalOpen && (
