@@ -54,17 +54,20 @@ const ChatLayout = () => {
   const email = useSelector((state: RootState) => state.user.email);
 
   const [userId, setUserId] = useState<string | null>(null);
-  const [messages, setMessages] = useState<{ message: string; time: string }[]>([]);
+  const [messages, setMessages] = useState<{ message: string; time: string }[]>(
+    []
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [conversations, setConversations] = useState<Chat[]>([]);
-  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
+  const [selectedConversationId, setSelectedConversationId] = useState<
+    string | null
+  >(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newChatName, setNewChatName] = useState("");
   const [newMessage, setNewMessage] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [sending, setSending] = useState(false);
-
 
   const fetchMessages = async (chatId: string) => {
     setLoading(true);
@@ -173,20 +176,19 @@ const ChatLayout = () => {
     fetchChats();
   }, [userId]);
 
-
   const handleSendMessage = async () => {
-    console.log('clicked');
-    setNewMessage("")
-    setSending(true)
+    console.log("clicked");
+    setNewMessage("");
+    setSending(true);
     if (!newMessage.trim() || !selectedConversationId || !userId) return;
-  
+
     const requestBody = {
       chatId: selectedConversationId,
       senderId: userId,
       senderType: "User",
       message: newMessage,
     };
-  
+
     try {
       const response = await fetch("/api/messages", {
         method: "POST",
@@ -195,17 +197,17 @@ const ChatLayout = () => {
         },
         body: JSON.stringify(requestBody),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         console.log("Message sent successfully:", data);
-  
+
         // Refresh messages for the selected chat
         await fetchMessages(selectedConversationId);
-        
+
         // Clear the input field
         setNewMessage("");
-        setSending(false)
+        setSending(false);
       } else {
         console.error("Failed to send message:", response.statusText);
       }
@@ -213,7 +215,6 @@ const ChatLayout = () => {
       console.error("Error sending message:", error);
     }
   };
-  
 
   return (
     <div className="flex h-screen">
@@ -228,7 +229,7 @@ const ChatLayout = () => {
           onClick={() => setIsSidebarOpen(false)}
           className="block md:hidden w-full p-2 bg-red-300 text-white rounded mb-4 mt-10"
         >
-         ❌
+          ❌
         </button>
         <button
           onClick={() => setIsModalOpen(true)}
@@ -273,7 +274,10 @@ const ChatLayout = () => {
             </div>
           )}
           {messages.map((msg, index) => (
-            <div key={index} className="mb-2 p-2 bg-gray-100 text-black rounded">
+            <div
+              key={index}
+              className="mb-2 p-2 bg-gray-100 text-black rounded"
+            >
               <div>{msg.message}</div>
               <div className="text-sm text-gray-500">{msg.time}</div>
             </div>
@@ -282,26 +286,84 @@ const ChatLayout = () => {
 
         {/* Input field */}
         <div className="p-4 border-t border-gray-300 flex">
-  <input
-    type="text"
-    value={newMessage}
-    onChange={(e) => setNewMessage(e.target.value)}
-    onKeyDown={(e) => {
-      if (e.key === "Enter") {
-        handleSendMessage();
-      }
-    }}
-    placeholder="Type a message..."
-    className="flex-1 border border-gray-600 p-2 rounded focus:outline-none text-black"
-  />
-  <button
-    onClick={() => handleSendMessage()}
-    className="ml-2 bg-blue-500 text-black px-4 py-2 rounded"
-  >
-   {sending? " ⟳ ":" Send"}
-  </button>
-</div>
-
+          <input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSendMessage();
+              }
+            }}
+            placeholder="Type a message..."
+            className="flex-1 border border-gray-600 p-2 rounded focus:outline-none text-black"
+          />
+          <button
+            onClick={() => handleSendMessage()}
+            className="ml-2 bg-blue-500 text-black px-4 py-2 rounded"
+          >
+            {sending ? (
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+                <circle
+                  fill="#49FF6D"
+                  stroke="#49FF6D"
+                  stroke-width="15"
+                  r="15"
+                  cx="40"
+                  cy="65"
+                >
+                  <animate
+                    attributeName="cy"
+                    calcMode="spline"
+                    dur="0.2"
+                    values="65;135;65;"
+                    keySplines=".5 0 .5 1;.5 0 .5 1"
+                    repeatCount="indefinite"
+                    begin="-.4"
+                  ></animate>
+                </circle>
+                <circle
+                  fill="#49FF6D"
+                  stroke="#49FF6D"
+                  stroke-width="15"
+                  r="15"
+                  cx="100"
+                  cy="65"
+                >
+                  <animate
+                    attributeName="cy"
+                    calcMode="spline"
+                    dur="0.2"
+                    values="65;135;65;"
+                    keySplines=".5 0 .5 1;.5 0 .5 1"
+                    repeatCount="indefinite"
+                    begin="-.2"
+                  ></animate>
+                </circle>
+                <circle
+                  fill="#49FF6D"
+                  stroke="#49FF6D"
+                  stroke-width="15"
+                  r="15"
+                  cx="160"
+                  cy="65"
+                >
+                  <animate
+                    attributeName="cy"
+                    calcMode="spline"
+                    dur="0.2"
+                    values="65;135;65;"
+                    keySplines=".5 0 .5 1;.5 0 .5 1"
+                    repeatCount="indefinite"
+                    begin="0"
+                  ></animate>
+                </circle>
+              </svg>
+            ) : (
+              " Send"
+            )}
+          </button>
+        </div>
       </div>
 
       {isModalOpen && (
