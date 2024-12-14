@@ -273,15 +273,20 @@ const ChatLayout = () => {
               No messages found for this conversation.
             </div>
           )}
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className="mb-2 p-2 bg-gray-100 text-black rounded"
-            >
-              <div>{msg.message}</div>
-              <div className="text-sm text-gray-500">{msg.time}</div>
-            </div>
-          ))}
+        {messages.map((msg, index) => (
+  <div
+    key={index}
+    className={`mb-2 p-2 rounded text-black  ${
+      index % 2 === 0
+        ? "bg-green-300 ml-0" // Odd messages
+        : "bg-blue-200 ml-4 font-semibold" // Even messages with margin
+    }`}
+  >
+    <div>{msg.message}</div>
+    <div className="text-sm text-gray-500">{msg.time}</div>
+  </div>
+))}
+
         </div>
 
         {/* Input field */}
