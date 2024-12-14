@@ -298,71 +298,83 @@ const ChatLayout = () => {
             placeholder="Type a message..."
             className="flex-1 border border-gray-600 p-2 rounded focus:outline-none text-black"
           />
-          <button
-            onClick={() => handleSendMessage()}
-            className="ml-2 bg-blue-500 text-black px-4 py-2 rounded"
-          >
-            {sending ? (
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-                <circle
-                  fill="#49FF6D"
-                  stroke="#49FF6D"
-                  stroke-width="15"
-                  r="15"
-                  cx="40"
-                  cy="65"
-                >
-                  <animate
-                    attributeName="cy"
-                    calcMode="spline"
-                    dur="0.2"
-                    values="65;135;65;"
-                    keySplines=".5 0 .5 1;.5 0 .5 1"
-                    repeatCount="indefinite"
-                    begin="-.4"
-                  ></animate>
-                </circle>
-                <circle
-                  fill="#49FF6D"
-                  stroke="#49FF6D"
-                  stroke-width="15"
-                  r="15"
-                  cx="100"
-                  cy="65"
-                >
-                  <animate
-                    attributeName="cy"
-                    calcMode="spline"
-                    dur="0.2"
-                    values="65;135;65;"
-                    keySplines=".5 0 .5 1;.5 0 .5 1"
-                    repeatCount="indefinite"
-                    begin="-.2"
-                  ></animate>
-                </circle>
-                <circle
-                  fill="#49FF6D"
-                  stroke="#49FF6D"
-                  stroke-width="15"
-                  r="15"
-                  cx="160"
-                  cy="65"
-                >
-                  <animate
-                    attributeName="cy"
-                    calcMode="spline"
-                    dur="0.2"
-                    values="65;135;65;"
-                    keySplines=".5 0 .5 1;.5 0 .5 1"
-                    repeatCount="indefinite"
-                    begin="0"
-                  ></animate>
-                </circle>
-              </svg>
-            ) : (
-              " Send"
-            )}
-          </button>
+       <button
+  onClick={() => handleSendMessage()}
+  disabled={sending} // Prevent multiple submissions while sending
+  className={`ml-2 px-4 py-2 rounded ${
+    sending
+      ? "bg-gray-400 text-white cursor-not-allowed" // Disabled style
+      : "bg-blue-500 text-black hover:bg-blue-600" // Normal style
+  }`}
+>
+  {sending ? (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 200 200"
+      width="24"
+      height="24"
+      className="animate-spin"
+    >
+      <circle
+        fill="#49FF6D"
+        stroke="#49FF6D"
+        strokeWidth="15"
+        r="15"
+        cx="40"
+        cy="65"
+      >
+        <animate
+          attributeName="cy"
+          calcMode="spline"
+          dur="0.8s"
+          values="65;135;65;"
+          keySplines=".5 0 .5 1;.5 0 .5 1"
+          repeatCount="indefinite"
+          begin="-.4s"
+        />
+      </circle>
+      <circle
+        fill="#49FF6D"
+        stroke="#49FF6D"
+        strokeWidth="15"
+        r="15"
+        cx="100"
+        cy="65"
+      >
+        <animate
+          attributeName="cy"
+          calcMode="spline"
+          dur="0.8s"
+          values="65;135;65;"
+          keySplines=".5 0 .5 1;.5 0 .5 1"
+          repeatCount="indefinite"
+          begin="-.2s"
+        />
+      </circle>
+      <circle
+        fill="#49FF6D"
+        stroke="#49FF6D"
+        strokeWidth="15"
+        r="15"
+        cx="160"
+        cy="65"
+      >
+        <animate
+          attributeName="cy"
+          calcMode="spline"
+          dur="0.8s"
+          values="65;135;65;"
+          keySplines=".5 0 .5 1;.5 0 .5 1"
+          repeatCount="indefinite"
+          begin="0s"
+        />
+      </circle>
+    </svg>
+  ) : (
+    "Send"
+  )}
+</button>
+
         </div>
       </div>
 
