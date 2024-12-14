@@ -70,7 +70,7 @@ const ChatLayout = () => {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:3000/api/messages/${chatId}`);
+      const response = await fetch(`/api/messages/${chatId}`);
       const data: FetchMessagesResponse = await response.json();
 
       if (response.ok) {
@@ -109,7 +109,7 @@ const ChatLayout = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3000/api/chats/createChat", {
+      const response = await fetch("/api/chats/createChat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -154,7 +154,7 @@ const ChatLayout = () => {
     const fetchChats = async () => {
       if (userId) {
         try {
-          const response = await fetch(`http://localhost:3000/api/chats/${userId}`);
+          const response = await fetch(`/api/chats/${userId}`);
           const data: UserData = await response.json();
 
           if (response.ok) {
@@ -186,7 +186,7 @@ const ChatLayout = () => {
     };
   
     try {
-      const response = await fetch("http://localhost:3000/api/messages", {
+      const response = await fetch("/api/messages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

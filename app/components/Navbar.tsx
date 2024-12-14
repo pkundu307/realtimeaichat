@@ -35,7 +35,7 @@ const Navbar: React.FC = () => {
   // Function to send user details to the backend API
   const storeUserDetails = async (user: User) => {
     try {
-      const response = await fetch("http://localhost:3000/api/auth/login", {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
