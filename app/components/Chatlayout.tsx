@@ -249,7 +249,7 @@ const ChatLayout = () => {
       </div>
 
       {/* Chat area */}
-      <div className="flex-1 flex flex-col bg-white">
+      <div className="flex-1 flex flex-col bg-white w-[90vh]">
         {/* Header for toggle */}
         <div className="p-4 bg-gray-100 border-b border-gray-300 flex items-center md:hidden">
           <button
