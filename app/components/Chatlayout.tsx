@@ -63,6 +63,7 @@ const ChatLayout = () => {
   const [newChatName, setNewChatName] = useState("");
   const [newMessage, setNewMessage] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [sending, setSending] = useState(false);
 
 
   const fetchMessages = async (chatId: string) => {
@@ -175,7 +176,8 @@ const ChatLayout = () => {
 
   const handleSendMessage = async () => {
     console.log('clicked');
-    
+    setNewMessage("")
+    setSending(true)
     if (!newMessage.trim() || !selectedConversationId || !userId) return;
   
     const requestBody = {
@@ -200,9 +202,10 @@ const ChatLayout = () => {
   
         // Refresh messages for the selected chat
         await fetchMessages(selectedConversationId);
-  
+        
         // Clear the input field
         setNewMessage("");
+        setSending(false)
       } else {
         console.error("Failed to send message:", response.statusText);
       }
@@ -295,7 +298,7 @@ const ChatLayout = () => {
     onClick={() => handleSendMessage()}
     className="ml-2 bg-blue-500 text-black px-4 py-2 rounded"
   >
-    Send
+   {sending? " ⟳ ":" Send"}
   </button>
 </div>
 
