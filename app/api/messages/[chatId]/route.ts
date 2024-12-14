@@ -4,9 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { chatId: string } }
+export async function GET(req: NextRequest, { params } : { params: Promise<{ chatId: string }> }
 ) {
   try {
     const { chatId } =await params; // Extract `chatId` from the route parameters
