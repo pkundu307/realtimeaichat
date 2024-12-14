@@ -279,20 +279,26 @@ const ChatLayout = () => {
 
         {/* Input field */}
         <div className="p-4 border-t border-gray-300 flex">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-1 border border-gray-600 p-2 rounded focus:outline-none text-black"
-          />
-          <button
-            onClick={() => handleSendMessage()}
-            className="ml-2 bg-blue-500 text-black px-4 py-2 rounded"
-          >
-            Send
-          </button>
-        </div>
+  <input
+    type="text"
+    value={newMessage}
+    onChange={(e) => setNewMessage(e.target.value)}
+    onKeyDown={(e) => {
+      if (e.key === "Enter") {
+        handleSendMessage();
+      }
+    }}
+    placeholder="Type a message..."
+    className="flex-1 border border-gray-600 p-2 rounded focus:outline-none text-black"
+  />
+  <button
+    onClick={() => handleSendMessage()}
+    className="ml-2 bg-blue-500 text-black px-4 py-2 rounded"
+  >
+    Send
+  </button>
+</div>
+
       </div>
 
       {isModalOpen && (
