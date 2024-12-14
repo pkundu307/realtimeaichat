@@ -57,16 +57,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 }
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: any }
-): Promise<NextResponse> {
+
+
+export async function GET(  req: NextRequest, { params } : { params: Promise<{ email: string }> }): Promise<NextResponse> {
 
   try {
     await connectionToDatabase();
     // Ensure the database is connected
   
-     const { email } =params;
+     const { email } =await params;
     
     if (!email || typeof email !== "string") {
       return NextResponse.json(

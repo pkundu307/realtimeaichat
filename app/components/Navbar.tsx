@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import { RootState } from "../GlobalRedux/store";
 
-interface User {
+type User= {
   email: string;
   name: string;
   image: string;
@@ -49,11 +49,11 @@ const Navbar: React.FC = () => {
       });
 
 
-      const data = await response.json();
+      const data1 = await response.json();
       if (response.ok) {
-        console.log("User details stored:", data);
+        console.log("User details stored:", data1);
       } else {
-        console.error("Failed to store user details:", data);
+        console.error("Failed to store user details:", data1);
       }
     } catch (error) {
       console.error("Error sending user details:", error);
@@ -70,7 +70,7 @@ const Navbar: React.FC = () => {
       // Store user details if session exists
       console.log(session.user);
       
-      const user = {
+      const user: User = {
         name: session.user.name || "",
         // id: "5",
         email: session.user.email || "",
@@ -80,7 +80,7 @@ const Navbar: React.FC = () => {
       // Dispatch Redux action
       dispatch(setUser(user));
 
-      storeUserDetails(session.user);
+      storeUserDetails(user);
     }
   }, [session, dispatch]);
 
