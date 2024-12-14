@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  chats:[
+  chat:[
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "chats",

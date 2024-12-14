@@ -3,40 +3,40 @@ import Message from "@/app/models/message.model.schema"; // Adjust the import ba
 import connectionToDatabase from "@/lib/mongoose"; // Ensure you have a utility function for DB connection
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-interface Part {
-  text: string;
-}
+// interface Part {
+//   text: string;
+// }
 
-interface Content {
-  parts: Part[];
-  role: string;
-}
+// interface Content {
+//   parts: Part[];
+//   role: string;
+// }
 
-interface Candidate {
-  content: Content;
-  finishReason: string;
-  avgLogprobs: number;
-}
+// interface Candidate {
+//   content: Content;
+//   finishReason: string;
+//   avgLogprobs: number;
+// }
 
-interface UsageMetadata {
-  promptTokenCount: number;
-  candidatesTokenCount: number;
-  totalTokenCount: number;
-}
+// interface UsageMetadata {
+//   promptTokenCount: number;
+//   candidatesTokenCount: number;
+//   totalTokenCount: number;
+// }
 
-interface Response {
-  candidates: Candidate[];
-  usageMetadata: UsageMetadata;
-  modelVersion: string;
-}
+// interface Response {
+//   candidates: Candidate[];
+//   usageMetadata: UsageMetadata;
+//   modelVersion: string;
+// }
 
-interface Message {
-  response: Response;
-}
+// interface Message {
+//   response: Response;
+// }
 
-interface Result {
-  message: Message;
-}
+// interface Result {
+//   message: Message;
+// }
 
 
 
@@ -71,15 +71,15 @@ export async function POST(req: NextRequest) {
     // Generate content using Google Generative AI
 
    
-    const result: Result = await model.generateContent(prompt as string); 
+    const result: unknown = await model.generateContent(prompt as string); 
 
     // Log the result to the console
     console.log('Generated Result:', result); 
     
     // Function to extract the generated text
-    function findText(obj: any): string[] {
-        let texts: string[] = [];
-        function recurse(current: any) {
+    function findText(obj: unknown): string[] {
+        const texts: string[] = [];
+        function recurse(current: unknown) {
             if (typeof current === "object" && current !== null) {
                 for (const key in current) {
                     if (key === "text") {
@@ -120,7 +120,8 @@ export async function POST(req: NextRequest) {
       },
       message: texts[0], // Use the extracted text as the response message
     })
-
+    await newMessage.save()
+    await responseMessage.save()
     // Return the created message
     return NextResponse.json({ success: true, message: texts[0] });
   } catch (error) {

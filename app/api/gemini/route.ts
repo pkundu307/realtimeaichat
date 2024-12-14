@@ -1,4 +1,4 @@
-import { NextRequest,NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 interface Part {
@@ -49,15 +49,14 @@ export async function GET(): Promise<NextResponse> {
       const prompt =  'hy how are you'; // Use a default if no prompt is provided
 
       // Generate content
-      const result: Result = await model.generateContent(prompt as string); 
+      const result: unknown = await model.generateContent(prompt as string); 
 
       // Log the result to the console
-      console.log('Generated Result:', result); 
       
       // Function to extract the generated text
-      function findText(obj: any): string[] {
-          let texts: string[] = [];
-          function recurse(current: any) {
+      function findText(obj: unknown): string[] {
+          const texts: string[] = [];
+          function recurse(current: unknown) {
               if (typeof current === "object" && current !== null) {
                   for (const key in current) {
                       if (key === "text") {

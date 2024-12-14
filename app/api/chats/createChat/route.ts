@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     await newChat.save();
 
     const user = await User.findById(participants[0].participantId)
-    user.chats.push(newChat.id);
+    user.chat.push(newChat.id);
     await user.save();
 
     return NextResponse.json(

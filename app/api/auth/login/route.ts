@@ -16,7 +16,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     try {
       // Parse the request body into JSON, adhering to the defined types
       const { email, name, image }: LoginRequestBody = await req.json();
-      console.log(email, name);
 
       await connectionToDatabase();
 
@@ -68,8 +67,7 @@ export async function GET(
     // Ensure the database is connected
   
      const { email } =params;
-      console.log('Parsed Email:', email);
-    console.log(email);
+    
     if (!email || typeof email !== "string") {
       return NextResponse.json(
         { message: "Invalid email provided." },

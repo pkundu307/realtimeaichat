@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { RootState } from "../GlobalRedux/store";
 
-
 // Define the structure of a Participant
 interface Participant {
   participantId: string;
@@ -27,7 +26,7 @@ interface UserData {
   email: string;
   name: string;
   profilePicture: string;
-  chats: Chat[];
+  chat: Chat[];
   createdAt: string;
   updatedAt: string;
   __v: number;
@@ -159,8 +158,8 @@ const ChatLayout = () => {
           const data: UserData = await response.json();
 
           if (response.ok) {
-            setConversations(data.chats);
-            setSelectedConversationId(data.chats[0]?._id || null); // Select the first conversation by default
+            setConversations(data.chat);
+            setSelectedConversationId(data.chat[0]?._id || null); // Select the first conversation by default
           } else {
             console.error("Failed to fetch chats:", data);
           }
@@ -263,27 +262,20 @@ const ChatLayout = () => {
 
         {/* Messages */}
         <div className="flex-1 p-4 overflow-y-auto">
-  {loading && <div>Loading messages...</div>}
-  {error && <div className="text-red-500">{error}</div>}
-  {!loading && !messages.length && !error && (
-    <div className="text-black">No messages found for this conversation.</div>
-  )}
-
-  {messages.map((msg, index) => (
-    <div
-      key={index}
-      className={`mb-4 p-4 text-black rounded-lg max-w-[80%] ${
-        index % 2 === 0
-          ? "bg-blue-100 self-start ml-4" // Even index: left aligned (bot's message)
-          : "bg-green-100 self-end mr-4" // Odd index: right aligned (user's message)
-      }`}
-    >
-      <div>{msg.message}</div>
-      <div className="text-sm text-gray-500">{msg.time}</div>
-    </div>
-  ))}
-</div>
-
+          {loading && <div>Loading messages...</div>}
+          {error && <div className="text-red-500">{error}</div>}
+          {!loading && !messages.length && !error && (
+            <div className="text-black">
+              No messages found for this conversation.
+            </div>
+          )}
+          {messages.map((msg, index) => (
+            <div key={index} className="mb-2 p-2 bg-gray-100 text-black rounded">
+              <div>{msg.message}</div>
+              <div className="text-sm text-gray-500">{msg.time}</div>
+            </div>
+          ))}
+        </div>
 
         {/* Input field */}
         <div className="p-4 border-t border-gray-300 flex">

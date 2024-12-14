@@ -1,22 +1,24 @@
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
-export const authOptions = {
+// Define the authentication options with proper typing
+export const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.googleClient||"",
-      clientSecret: process.env.secret||"",
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
   ],
-  secret: "pkpkpk",  // Set the secret for encryption
+  secret: process.env.NEXTAUTH_SECRET || "default-secret",
   pages: {
-    signIn: '/', // Customize your login page (optional)
+    signIn: "/", // Customize your login page if needed
   },
   session: {
-    strategy: 'jwt', // Use JWT for session
+    strategy: "jwt", // Use JWT for session
   },
-  // debug: process.env.NODE_ENV === "development",  // Debug only in development
 };
 
+// Define the handler using the typed authOptions
 const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
+
+// Export the handlers as required by Next.js

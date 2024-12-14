@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: { chatId: string } }
 ) {
   try {
-    const { chatId } = params; // Extract `chatId` from the route parameters
+    const { chatId } =await params; // Extract `chatId` from the route parameters
 
     console.log("Chat ID:", chatId);
 

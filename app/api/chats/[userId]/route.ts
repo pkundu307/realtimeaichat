@@ -8,14 +8,13 @@ import connectionToDatabase from "@/lib/mongoose";
 
 export async function GET(req: NextRequest, { params }: { params: { userId: string } }) {
   const { userId } =await params;
-  console.log(userId);
   
   try {
     // Connect to the database
     await connectionToDatabase();
 
 
-    const user = await User.findById(userId).populate("chats")
+    const user = await User.findById(userId).populate("chat")
     
 
     if (!user) {
