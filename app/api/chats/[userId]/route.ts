@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { User } from "@/app/models/user.model"; // Adjust the path to where your model is located
 import connectionToDatabase from "@/lib/mongoose";
-
-export async function GET(req: NextRequest, context: { params: { userId: string } }) {
-  const { userId } = context.params;
+export async function GET(req: NextRequest, { params } : { params: Promise<{ userId: string }> }) {
+  const { userId } = await params;
 
   try {
     // Connect to the database
