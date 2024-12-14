@@ -33,7 +33,7 @@ This repository hosts a ChatGPT-like platform built using modern web technologie
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/your-username/chatgpt-platform.git
+   git clone https://github.com/your-username/chatgpt-platform.git](https://github.com/pkundu307/realtimeaichat.git
    cd chatgpt-platform
    ```
 
