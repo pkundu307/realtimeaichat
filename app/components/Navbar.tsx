@@ -12,8 +12,8 @@ interface User {
   email: string;
   name: string;
   image: string;
-  googleId: string;
-  id: string;
+  // googleId: string;
+  // id: string | null;
 }
 
 const Navbar: React.FC = () => {
@@ -44,7 +44,7 @@ const Navbar: React.FC = () => {
           email: user?.email,
           name: user?.name,
           image: user?.image,
-          // googleId: user.googleId, // optional field
+          // id: user.googleId, // optional field
         }),
       });
 
@@ -68,12 +68,14 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     if (session?.user) {
       // Store user details if session exists
+      console.log(session.user);
+      
       const user = {
-        id: session.user.id || "", // Replace with your session field for ID
         name: session.user.name || "",
+        // id: "5",
         email: session.user.email || "",
         image: session.user.image || "",
-        // googleId: session.user.id || "", // Assuming googleId is available in session
+        // googleId:  "", // Assuming googleId is available in session
       };
       // Dispatch Redux action
       dispatch(setUser(user));
